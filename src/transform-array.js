@@ -14,13 +14,33 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 function transform(arr) {
-  if(!Array.isArray(arr)) return 'arr parameter must be an instance of the Array';
-  const cmds = {
-    '--discard-next': 0,
-    '--discard-prev': 1,
-    '--double-next': 2,
-    '--double-prev': 3
+  if(!Array.isArray(arr)) throw new Error('\'arr\' parameter must be an instance of the Array!');
+  if(!arr.length) return [];
+  let res = [];
+  for(let i = 0; i < arr.length; i++) {
+    if(arr[i] === '--discard-prev') {
+      if(arr[i - 1] !== '-') {
+        res.pop();
+        res.push('-');
+      }
+    }
+    else if(arr[i] === '--discard-next') {
+      res.push('-');
+      i++;
+    }
+    else if(arr[i] === '--double-next') {
+      res.push(arr[i + 1] || '-');
+    }
+    else if(arr[i] === '--double-prev') {
+      if(res[res.length - 1] !== '-' && res.length) {
+        res.push(res[res.length - 1]);
+      }
+    }
+    else {
+      res.push(arr[i]);
+    }
   }
+  return res.filter(el => el !== '-');
 }
 
 module.exports = {
